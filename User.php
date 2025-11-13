@@ -141,16 +141,28 @@ class User
             utilisateurs.firstname = ?, utilisateurs.lastname = ? 
             WHERE utilisateurs.login = ?";
                 db_execute($query, [$password, $email, $firstname, $lastname, $this->login]);
+                $this->password = $password;
+                $this->email = $email;
+                $this->firstname = $firstname;
+                $this->lastname = $lastname;
                 echo "Informations mises à jour avec succès !";
                 br();
             } else {
                 echo "Mise à jour de vos informations...";
                 br();
+                $id_get = "SELECT id FROM utilisateurs WHERE utilisateurs.login = ?";
+                $id = db_select_one($id_get, [$this->login]);
+                $id = $id["id"];
                 $query = "UPDATE utilisateurs 
-            SET utilisateurs.password = ?, utilisateurs.password = ?, utilisateurs.email = ?, 
+            SET utilisateurs.login = ?, utilisateurs.password = ?, utilisateurs.email = ?, 
             utilisateurs.firstname = ?, utilisateurs.lastname = ? 
-            WHERE utilisateurs.login = ?";
-                db_execute($query, [$login, $password, $email, $firstname, $lastname, $this->login]);
+            WHERE utilisateurs.id = ?";
+                db_execute($query, [$login, $password, $email, $firstname, $lastname, $id]);
+                $this->login = $login;
+                $this->password = $password;
+                $this->email = $email;
+                $this->firstname = $firstname;
+                $this->lastname = $lastname;
                 echo "Informations mises à jour avec succès !";
                 br();
                 $_SESSION["user"] = $login;
