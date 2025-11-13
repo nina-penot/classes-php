@@ -34,7 +34,7 @@ class User
             $query = "INSERT INTO utilisateurs (login, password, email, firstname, lastname) 
             VALUES (?, ?, ?, ?, ?)";
             db_execute($query, [$login, $password, $email, $firstname, $lastname]);
-            echo "Inscrit ", $this->login, " avec succès !";
+            echo "Inscrit ", $login, " avec succès !";
             br();
         } else {
             echo "ERREUR : Cet utilisateur existe déjà!";
