@@ -16,3 +16,4 @@ $dummy->getAllInfos();
 $dummy->getEmail();
 $dummy->disconnect();
 $dummy->getEmail();
+$dummy->update("GO", "agb", "ago@mail.com", "AWA", "b");

@@ -126,32 +126,38 @@ class User
      */
     public function update($login, $password, $email, $firstname, $lastname)
     {
-        //Vérifie si login existe
-        $query = "SELECT * FROM utilisateurs WHERE utilisateurs.login = ?";
-        $exist = db_select_one($query, [$login]);
-        if (!empty($exist)) {
-            echo "Ce login : ", $login, ", existe déjà.";
-            br();
-            echo "Mais les autres informations seront tout de même mises à jour.";
-            br();
-            $query = "UPDATE utilisateurs 
+        //Vérifie si connecté
+        if (!empty($this->login)) {
+            //Vérifie si login existe
+            $query = "SELECT * FROM utilisateurs WHERE utilisateurs.login = ?";
+            $exist = db_select_one($query, [$login]);
+            if (!empty($exist)) {
+                echo "Ce login : ", $login, ", existe déjà.";
+                br();
+                echo "Mais les autres informations seront tout de même mises à jour.";
+                br();
+                $query = "UPDATE utilisateurs 
             SET utilisateurs.password = ?, utilisateurs.email = ?, 
             utilisateurs.firstname = ?, utilisateurs.lastname = ? 
             WHERE utilisateurs.login = ?";
-            db_execute($query, [$password, $email, $firstname, $lastname, $login]);
-            echo "Informations mises à jour avec succès !";
-            br();
-        } else {
-            echo "Mise à jour de vos informations...";
-            br();
-            $query = "UPDATE utilisateurs 
+                db_execute($query, [$password, $email, $firstname, $lastname, $this->login]);
+                echo "Informations mises à jour avec succès !";
+                br();
+            } else {
+                echo "Mise à jour de vos informations...";
+                br();
+                $query = "UPDATE utilisateurs 
             SET utilisateurs.password = ?, utilisateurs.password = ?, utilisateurs.email = ?, 
             utilisateurs.firstname = ?, utilisateurs.lastname = ? 
             WHERE utilisateurs.login = ?";
-            db_execute($query, [$login, $password, $email, $firstname, $lastname, $login]);
-            echo "Informations mises à jour avec succès !";
+                db_execute($query, [$login, $password, $email, $firstname, $lastname, $this->login]);
+                echo "Informations mises à jour avec succès !";
+                br();
+                $_SESSION["user"] = $login;
+            }
+        } else {
+            echo "ERREUR : Aucun utilisateur connecté.";
             br();
-            $_SESSION["user"] = $login;
         }
     }
 
