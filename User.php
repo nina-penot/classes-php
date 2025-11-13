@@ -101,23 +101,59 @@ class User
      */
     public function delete()
     {
-        session_destroy();
+        if (!empty($this->login)) {
+            session_destroy();
 
-        $query = "DELETE FROM utilisateurs WHERE utilisateurs.login = ?";
-        return db_execute($query, [$this->login]);
+            $query = "DELETE FROM utilisateurs WHERE utilisateurs.login = ?";
+            db_execute($query, [$this->login]);
+            echo "Utilisateur supprimé !";
+            br();
 
-        $this->login = NULL;
-        $this->password = NULL;
-        $this->email = NULL;
-        $this->firstname = NULL;
-        $this->lastname = NULL;
-        session_destroy();
+            $this->login = NULL;
+            $this->password = NULL;
+            $this->email = NULL;
+            $this->firstname = NULL;
+            $this->lastname = NULL;
+            session_start();
+        } else {
+            echo "Il n'y a pas d'utilisateurs inscrit. Impossible de supprimer.";
+            br();
+        }
     }
 
     /**
      * Met à jour les informations de l'utilisateur
      */
-    public function update($login, $password, $email, $firstname, $lastname) {}
+    public function update($login, $password, $email, $firstname, $lastname)
+    {
+        //Vérifie si login existe
+        $query = "SELECT * FROM utilisateurs WHERE utilisateurs.login = ?";
+        $exist = db_select_one($query, [$login]);
+        if (!empty($exist)) {
+            echo "Ce login : ", $login, ", existe déjà.";
+            br();
+            echo "Mais les autres informations seront tout de même mises à jour.";
+            br();
+            $query = "UPDATE utilisateurs 
+            SET utilisateurs.password = ?, utilisateurs.email = ?, 
+            utilisateurs.firstname = ?, utilisateurs.lastname = ? 
+            WHERE utilisateurs.login = ?";
+            db_execute($query, [$password, $email, $firstname, $lastname, $login]);
+            echo "Informations mises à jour avec succès !";
+            br();
+        } else {
+            echo "Mise à jour de vos informations...";
+            br();
+            $query = "UPDATE utilisateurs 
+            SET utilisateurs.password = ?, utilisateurs.password = ?, utilisateurs.email = ?, 
+            utilisateurs.firstname = ?, utilisateurs.lastname = ? 
+            WHERE utilisateurs.login = ?";
+            db_execute($query, [$login, $password, $email, $firstname, $lastname, $login]);
+            echo "Informations mises à jour avec succès !";
+            br();
+            $_SESSION["user"] = $login;
+        }
+    }
 
     /**
      * Check si connécté
